@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Últimos Movimientos</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style> body { background-color: #f4f7f6; padding-top: 20px; } </style>
+</head>
+<body>
+
+<div class="container" style="max-width: 600px;">
+  <div class="card shadow border-0 rounded-4">
+    <div class="card-header bg-white border-bottom-0 pt-4 pb-2">
+      <h2 class="fw-bold">Historial</h2>
+    </div>
+
+    <div class="list-group list-group-flush" id="transactionList">
+      <!-- Se llena con JS -->
+      <div class="text-center p-4 text-muted">Cargando movimientos...</div>
+    </div>
+
+    <div class="card-body p-4">
+      <button onclick="window.location.href='menu.html'" class="btn btn-outline-dark w-100 rounded-pill">
+        ⬅ Volver al Menú Principal
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const listContainer = document.getElementById('transactionList');
+    const transactions = JSON.parse(localStorage.getItem('walletTransactions')) || [];
+
+    listContainer.innerHTML = ''; // Limpiar
+
+    if (transactions.length === 0) {
+      listContainer.innerHTML = '<div class="p-4 text-center text-muted">No hay movimientos recientes.</div>';
+      return;
+    }
+
+    transactions.forEach(t => {
+      // Definir color y signo según el tipo
+      const isDeposit = t.type === 'deposit';
+      const colorClass = isDeposit ? 'text-success' : 'text-danger';
+      const sign = isDeposit ? '+' : '-';
+
+      const itemHTML = `
+                    <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                        <div>
+                            <h6 class="mb-0 fw-bold">${t.text}</h6>
+                            <small class="text-muted">${t.date}</small>
+                        </div>
+                        <span class="fs-5 fw-bold ${colorClass}">
+                            ${sign} $${t.amount.toLocaleString()}
+                        </span>
+                    </div>
+                `;
+      listContainer.innerHTML += itemHTML;
+    });
+  });
+</script>
+</body>
+</html>

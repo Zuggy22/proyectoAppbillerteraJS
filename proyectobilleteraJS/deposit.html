@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Depositar</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style> body { background-color: #f4f7f6; display: flex; align-items: center; height: 100vh; } </style>
+</head>
+<body>
+
+<div class="container" style="max-width: 500px;">
+  <div class="card shadow border-0 rounded-4 p-4">
+    <h2 class="fw-bold mb-4 text-success">Depositar</h2>
+
+    <form id="depositForm">
+      <div class="mb-4">
+        <label class="form-label">Monto a ingresar</label>
+        <div class="input-group input-group-lg">
+          <span class="input-group-text bg-white">$</span>
+          <input type="number" class="form-control" id="amount" placeholder="0" min="1" required>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-success w-100 py-3 rounded-pill fw-bold">Realizar depósito</button>
+      <a href="menu.html" class="btn btn-link w-100 mt-3 text-decoration-none text-muted">Cancelar</a>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.getElementById('depositForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const amount = parseFloat(document.getElementById('amount').value);
+
+    if (amount > 0) {
+      // 1. Obtener saldo actual
+      let currentBalance = parseFloat(localStorage.getItem('walletBalance')) || 0;
+
+      // 2. Sumar
+      let newBalance = currentBalance + amount;
+
+      // 3. Guardar nuevo saldo
+      localStorage.setItem('walletBalance', newBalance);
+
+      // 4. Registrar movimiento
+      let transactions = JSON.parse(localStorage.getItem('walletTransactions')) || [];
+      transactions.unshift({ // Agregar al principio
+        type: 'deposit',
+        text: 'Depósito de efectivo',
+        amount: amount,
+        date: new Date().toLocaleString()
+      });
+      localStorage.setItem('walletTransactions', JSON.stringify(transactions));
+
+      alert(`Depósito exitoso. Tu nuevo saldo es $${newBalance}`);
+      window.location.href = 'menu.html';
+    } else {
+      alert("Por favor ingrese un monto válido.");
+    }
+  });
+</script>
+</body>
+</html>
